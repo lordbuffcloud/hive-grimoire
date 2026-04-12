@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hive Grimoire
 
-## Getting Started
+A bee-themed Goetic timing & sigil companion. 72 spirits of the *Ars Goetia* mapped to a honeycomb grid, with accurate planetary hours and deterministic intent matching.
 
-First, run the development server:
+## Features
+
+- **Honeycomb Grid** — 72 hexagonal cells, one per Goetic spirit. Current planetary hour's matching spirits glow amber. Search by keyword to find spirits by domain.
+- **Spirit Detail** — Sigil display, correspondences (planet, zodiac, metal, direction), powers, and a timing panel showing the next optimal working window.
+- **Planetary Hours Clock** — Real-time Chaldean planetary hours calculated from true sunrise/sunset via device geolocation.
+- **Intent Matcher** — Enter a goal in natural language; deterministic keyword matching returns ranked candidate spirits with timing.
+- **Working Journal** — Log sessions with spirit, intent, planetary hour, and notes. Stored in IndexedDB (never leaves your device). Export to Markdown for Obsidian.
+- **Meditation Mode** — Full-screen sigil with breath-pacing ring and configurable timer.
+
+## Setup
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Run tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+### Docker self-hosting
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+docker compose up --build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Serves on port 3000.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Deploy to Vercel
 
-## Deploy on Vercel
+Push to GitHub and import in the Vercel dashboard. No configuration needed — Next.js is auto-detected.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS** with amber/gold/black palette
+- **suncalc** for astronomical calculations
+- **idb** for IndexedDB journal storage
+- Static JSON data, no backend
+
+## Data Sources
+
+Spirit data is compiled from public domain sources:
+
+- Joseph Peterson's critical edition (esotericarchives.com)
+- S.L. MacGregor Mathers, *The Goetia* (1904)
+- British Library Sloane MSS 2731 and 3825
+
+Each spirit entry notes its manuscript provenance. Sigils are currently geometric placeholders pending reproduction from manuscript sources.
+
+## Planetary Hours Accuracy
+
+Planetary hours follow the Chaldean order (Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon). Day hours divide the period from true sunrise to sunset into 12 equal parts; night hours divide sunset to next sunrise into 12 equal parts. The first hour of each day is ruled by the day's planet (Sun on Sunday, Moon on Monday, etc.).
+
+The calculation uses the `suncalc` library for solar position and is verified against known planetary hour tables.
+
+## Philosophical Framing
+
+This app treats the Goetia as a symbolic map of consciousness — archetypal forces to be understood and integrated, not literal entities to command. The bee symbolism reflects this: a hive is a distributed intelligence, each cell a discrete pattern, the whole greater than the sum. The 72 sigils are cells in that hive of human psychic experience.
+
+**This is a contemplative and study tool, not a claim about metaphysical efficacy.**
+
+## License
+
+MIT

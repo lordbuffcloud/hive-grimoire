@@ -1,0 +1,40 @@
+{
+  "chaldeanOrder": ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"],
+  "dayRulers": {
+    "Sunday": "Sun",
+    "Monday": "Moon",
+    "Tuesday": "Mars",
+    "Wednesday": "Mercury",
+    "Thursday": "Jupiter",
+    "Friday": "Venus",
+    "Saturday": "Saturn"
+  },
+  "planetMetals": {
+    "Saturn": "Lead",
+    "Jupiter": "Tin",
+    "Mars": "Iron",
+    "Sun": "Gold",
+    "Venus": "Copper",
+    "Mercury": "Mercury/Quicksilver",
+    "Moon": "Silver"
+  },
+  "planetColors": {
+    "Saturn": "#6b7280",
+    "Jupiter": "#7c3aed",
+    "Mars": "#ef4444",
+    "Sun": "#f59e0b",
+    "Venus": "#10b981",
+    "Mercury": "#f97316",
+    "Moon": "#c4b5fd"
+  },
+  "planetSymbols": {
+    "Saturn": "\u2644",
+    "Jupiter": "\u2643",
+    "Mars": "\u2642",
+    "Sun": "\u2609",
+    "Venus": "\u2640",
+    "Mercury": "\u263f",
+    "Moon": "\u263d"
+  },
+  "ranks": ["King", "Duke", "Prince", "Marquis", "President", "Earl", "Knight"]
+}
