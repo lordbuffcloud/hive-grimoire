@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh auth:*)",
+      "Bash(npm -v)",
+      "Bash(gh repo:*)",
+      "Bash(npx create-next-app@latest . --ts --tailwind --eslint --app --src=false --import-alias=\"@/*\" --use-npm)"
+    ]
+  }
+}
