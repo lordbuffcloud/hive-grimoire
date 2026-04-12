@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import type { Spirit, Planet } from "@/lib/types";
 import { PLANET_SYMBOLS, PLANET_COLORS } from "@/lib/planetaryHours";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -39,12 +38,12 @@ export default function SpiritDetail({ spirit }: SpiritDetailProps) {
     <div className="mx-auto max-w-2xl px-4 py-8">
       {/* Sigil */}
       <div className="mb-8 flex justify-center">
-        <div className="relative h-48 w-48 rounded-full border-2 border-amber/30 bg-obsidian-light p-4">
-          <Image
+        <div className="flex h-48 w-48 items-center justify-center rounded-full border-2 border-amber/30 bg-obsidian-light p-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={spirit.sigilPath}
             alt={`Sigil of ${spirit.name}`}
-            fill
-            className="object-contain p-4"
+            className="h-32 w-32 object-contain"
           />
         </div>
       </div>

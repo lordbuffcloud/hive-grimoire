@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import type { Spirit } from "@/lib/types";
 
 interface MeditationModeProps {
@@ -73,14 +72,12 @@ export default function MeditationMode({
         }`}
       >
         {/* Sigil */}
-        <div className="relative h-48 w-48">
-          <Image
-            src={spirit.sigilPath}
-            alt={`Sigil of ${spirit.name}`}
-            fill
-            className="object-contain"
-          />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={spirit.sigilPath}
+          alt={`Sigil of ${spirit.name}`}
+          className="h-48 w-48 object-contain"
+        />
       </div>
 
       {/* Breath instruction */}

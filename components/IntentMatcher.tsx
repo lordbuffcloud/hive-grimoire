@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import type { Spirit, Planet } from "@/lib/types";
 import { matchSpirits } from "@/lib/spiritMatcher";
 import { PLANET_SYMBOLS, PLANET_COLORS, getNextHourForPlanet } from "@/lib/planetaryHours";
@@ -60,12 +59,12 @@ export default function IntentMatcher({ spirits }: IntentMatcherProps) {
               >
                 <div className="flex gap-4">
                   {/* Sigil thumbnail */}
-                  <div className="relative h-16 w-16 flex-shrink-0">
-                    <Image
+                  <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={spirit.sigilPath}
                       alt={`Sigil of ${spirit.name}`}
-                      fill
-                      className="object-contain"
+                      className="h-14 w-14 object-contain"
                     />
                   </div>
 
