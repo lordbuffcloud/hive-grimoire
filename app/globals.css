@@ -9,6 +9,8 @@
   --obsidian: #0a0a0a;
   --obsidian-light: #1a1a1a;
   --obsidian-mid: #2a2a2a;
+  --hex-size: 80px;
+  --hex-overlap: 20px;
 }
 
 @theme inline {
@@ -32,4 +34,44 @@ body {
 /* Hexagonal clip path for honeycomb cells */
 .hex-clip {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+/* Honeycomb grid layout */
+.honeycomb-cell {
+  width: var(--hex-size);
+  flex-shrink: 0;
+}
+
+.honeycomb-row--offset {
+  padding-left: calc(var(--hex-size) / 2 + 2px);
+  padding-right: calc(var(--hex-size) / 2 + 2px);
+}
+
+/* Responsive hex sizes */
+@media (min-width: 640px) {
+  :root {
+    --hex-size: 90px;
+    --hex-overlap: 22px;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --hex-size: 100px;
+    --hex-overlap: 25px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --hex-size: 110px;
+    --hex-overlap: 28px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --hex-size: 120px;
+    --hex-overlap: 30px;
+  }
 }

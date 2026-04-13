@@ -22,6 +22,29 @@ interface HoneycombGridProps {
   spirits: Spirit[];
 }
 
+/**
+ * Arranges spirits into rows for honeycomb layout.
+ * Even rows have `cols` items, odd rows have `cols - 1` and are offset.
+ */
+function buildHoneycombRows(items: Spirit[], cols: number): { spirit: Spirit; offset: boolean }[][] {
+  const rows: { spirit: Spirit; offset: boolean }[][] = [];
+  let i = 0;
+  let isOffset = false;
+
+  while (i < items.length) {
+    const rowSize = isOffset ? cols - 1 : cols;
+    const row = items.slice(i, i + rowSize).map((spirit) => ({
+      spirit,
+      offset: isOffset,
+    }));
+    rows.push(row);
+    i += rowSize;
+    isOffset = !isOffset;
+  }
+
+  return rows;
+}
+
 export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
   const [search, setSearch] = useState("");
   const [planetFilter, setPlanetFilter] = useState<Planet | null>(null);
@@ -41,6 +64,10 @@ export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
     }
     return list;
   }, [spirits, planetFilter]);
+
+  // Build honeycomb rows with 9 cols on large screens
+  // We use CSS to handle responsive column counts
+  const rows = useMemo(() => buildHoneycombRows(filtered, 9), [filtered]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -103,38 +130,30 @@ export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
       </div>
 
       {/* Honeycomb grid */}
-      <div className="grid grid-cols-4 gap-1 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-9">
-        {filtered.map((spirit, index) => {
-          // Offset every other row for honeycomb effect
-          const cols =
-            typeof window !== "undefined" && window.innerWidth >= 1024
-              ? 9
-              : typeof window !== "undefined" && window.innerWidth >= 768
-                ? 8
-                : typeof window !== "undefined" && window.innerWidth >= 640
-                  ? 6
-                  : 4;
-          const row = Math.floor(index / cols);
-          const isOffsetRow = row % 2 === 1;
-
-          return (
-            <div
-              key={spirit.id}
-              className={isOffsetRow ? "translate-x-[50%]" : ""}
-              style={{
-                marginTop: index >= cols ? "-0.5rem" : undefined,
-              }}
-            >
-              <HexCell
-                spirit={spirit}
-                isActive={currentHour?.planet === spirit.planet}
-                isHighlighted={
-                  search.trim().length > 0 && matchedIds.has(spirit.id)
-                }
-              />
-            </div>
-          );
-        })}
+      <div className="honeycomb-grid">
+        {rows.map((row, rowIndex) => (
+          <div
+            key={rowIndex}
+            className={`honeycomb-row flex justify-center gap-[4px] ${
+              row[0]?.offset ? "honeycomb-row--offset" : ""
+            }`}
+            style={{
+              marginTop: rowIndex > 0 ? "calc(-1 * var(--hex-overlap))" : undefined,
+            }}
+          >
+            {row.map(({ spirit }) => (
+              <div key={spirit.id} className="honeycomb-cell">
+                <HexCell
+                  spirit={spirit}
+                  isActive={currentHour?.planet === spirit.planet}
+                  isHighlighted={
+                    search.trim().length > 0 && matchedIds.has(spirit.id)
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
 
       {/* Results count */}
