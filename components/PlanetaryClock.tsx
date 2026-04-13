@@ -8,7 +8,7 @@ import {
   getDayRuler,
   getSunTimes,
 } from "@/lib/planetaryHours";
-import type { Planet, PlanetaryHour } from "@/lib/types";
+import type { Planet } from "@/lib/types";
 import { useState } from "react";
 
 function formatTime(date: Date): string {
@@ -26,25 +26,47 @@ function formatDuration(ms: number): string {
 }
 
 export default function PlanetaryClock() {
-  const { lat, lng, loading, error, source, setManualLocation } =
-    useGeolocation();
-  const { currentHour, allHours, timeUntilNext } = usePlanetaryHour(lat, lng);
+  const { lat, lng, source, setManualLocation } = useGeolocation();
+  const { currentHour, allHours, timeUntilNext, isBeforeSunrise } =
+    usePlanetaryHour(lat, lng);
   const [showManual, setShowManual] = useState(false);
   const [manualLat, setManualLat] = useState(String(lat));
   const [manualLng, setManualLng] = useState(String(lng));
 
   const now = new Date();
-  const dayRuler = getDayRuler(now);
-  const { sunrise, sunset } = getSunTimes(lat, lng, now);
+  const calendarDayRuler = getDayRuler(now);
+
+  // The planetary day ruler — if before sunrise, we're in yesterday's planetary day
+  const planetaryDayRef = new Date(now);
+  planetaryDayRef.setHours(12, 0, 0, 0);
+  if (isBeforeSunrise) {
+    planetaryDayRef.setDate(planetaryDayRef.getDate() - 1);
+  }
+  const planetaryDayRuler = getDayRuler(planetaryDayRef);
+  const { sunrise, sunset } = getSunTimes(lat, lng, planetaryDayRef);
+
+  const dayName = now.toLocaleDateString(undefined, { weekday: "long" });
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <h1 className="mb-2 text-center font-serif text-3xl font-bold text-amber">
         Planetary Hours
       </h1>
-      <p className="mb-8 text-center font-mono text-sm text-cream/50">
+      <p className="mb-1 text-center font-mono text-sm text-cream/50">
         Chaldean order · Based on true sunrise/sunset
       </p>
+      <p className="mb-8 text-center font-mono text-xs text-cream/40">
+        {dayName} · {now.toLocaleDateString()}
+      </p>
+
+      {/* Before-sunrise notice */}
+      {isBeforeSunrise && (
+        <div className="mb-4 rounded-lg border border-cream/10 bg-obsidian-light px-4 py-2 text-center font-mono text-xs text-cream/50">
+          Before sunrise — still in{" "}
+          {planetaryDayRef.toLocaleDateString(undefined, { weekday: "long" })}
+          &apos;s planetary night
+        </div>
+      )}
 
       {/* Current hour display */}
       {currentHour && (
@@ -76,12 +98,14 @@ export default function PlanetaryClock() {
         <div className="rounded-lg border border-amber/10 bg-obsidian-light p-3">
           <span
             className="text-xl"
-            style={{ color: PLANET_COLORS[dayRuler] }}
+            style={{ color: PLANET_COLORS[planetaryDayRuler] }}
           >
-            {PLANET_SYMBOLS[dayRuler]}
+            {PLANET_SYMBOLS[planetaryDayRuler]}
           </span>
-          <p className="mt-1 font-mono text-xs text-cream/50">Day Ruler</p>
-          <p className="font-serif text-sm text-cream">{dayRuler}</p>
+          <p className="mt-1 font-mono text-xs text-cream/50">
+            {isBeforeSunrise ? "Planetary Day" : "Day Ruler"}
+          </p>
+          <p className="font-serif text-sm text-cream">{planetaryDayRuler}</p>
         </div>
         <div className="rounded-lg border border-amber/10 bg-obsidian-light p-3">
           <span className="text-xl text-amber">↑</span>
@@ -145,7 +169,9 @@ export default function PlanetaryClock() {
       {/* 24-hour timeline */}
       <div className="space-y-1">
         <h3 className="mb-3 font-serif text-lg font-semibold text-amber">
-          Today&apos;s Hours
+          {isBeforeSunrise
+            ? `${planetaryDayRef.toLocaleDateString(undefined, { weekday: "long" })}'s Planetary Hours`
+            : "Today\u2019s Hours"}
         </h3>
         {allHours.map((hour, i) => {
           const isCurrent =
@@ -171,10 +197,10 @@ export default function PlanetaryClock() {
                 {formatTime(hour.start)} – {formatTime(hour.end)}
               </span>
               <span className="text-xs text-cream/30">
-                {hour.isDay ? "☀" : "☽"} {hour.hourNumber}
+                {hour.isDay ? "\u2600" : "\u263D"} {hour.hourNumber}
               </span>
               {isCurrent && (
-                <span className="text-xs text-amber">← now</span>
+                <span className="text-xs text-amber">\u2190 now</span>
               )}
             </div>
           );
