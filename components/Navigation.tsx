@@ -22,7 +22,7 @@ export default function Navigation() {
         >
           Hive Grimoire
         </Link>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
           {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
@@ -43,6 +43,15 @@ export default function Navigation() {
               </Link>
             );
           })}
+          <a
+            href="https://buymeacoffee.com/napalmlighs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2 flex items-center gap-1.5 rounded-lg border border-amber/30 bg-amber/10 px-3 py-1.5 font-mono text-sm text-amber transition-colors hover:bg-amber/20"
+          >
+            <span className="text-base">☕</span>
+            <span className="hidden sm:inline">Support</span>
+          </a>
         </div>
       </div>
     </nav>
