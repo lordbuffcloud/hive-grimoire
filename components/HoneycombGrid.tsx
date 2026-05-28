@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Spirit, Planet } from "@/lib/types";
 import HexCell from "./HexCell";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { usePlanetaryHour } from "@/hooks/usePlanetaryHour";
 import { PLANET_SYMBOLS } from "@/lib/planetaryHours";
 import { matchSpirits } from "@/lib/spiritMatcher";
+import {
+  buildHoneycombRows,
+  getHoneycombColumnCount,
+} from "@/lib/honeycomb";
 
 const ALL_PLANETS: Planet[] = [
   "Sun",
@@ -22,34 +26,28 @@ interface HoneycombGridProps {
   spirits: Spirit[];
 }
 
-/**
- * Arranges spirits into rows for honeycomb layout.
- * Even rows have `cols` items, odd rows have `cols - 1` and are offset.
- */
-function buildHoneycombRows(items: Spirit[], cols: number): { spirit: Spirit; offset: boolean }[][] {
-  const rows: { spirit: Spirit; offset: boolean }[][] = [];
-  let i = 0;
-  let isOffset = false;
-
-  while (i < items.length) {
-    const rowSize = isOffset ? cols - 1 : cols;
-    const row = items.slice(i, i + rowSize).map((spirit) => ({
-      spirit,
-      offset: isOffset,
-    }));
-    rows.push(row);
-    i += rowSize;
-    isOffset = !isOffset;
-  }
-
-  return rows;
-}
-
 export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
   const [search, setSearch] = useState("");
   const [planetFilter, setPlanetFilter] = useState<Planet | null>(null);
+  const [cols, setCols] = useState(4);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { lat, lng } = useGeolocation();
   const { currentHour } = usePlanetaryHour(lat, lng);
+
+  useEffect(() => {
+    const syncColumns = () => {
+      const availableWidth =
+        containerRef.current?.clientWidth ?? window.innerWidth;
+      const rootStyles = getComputedStyle(document.documentElement);
+      const hexSize =
+        Number.parseFloat(rootStyles.getPropertyValue("--hex-size")) || 80;
+      setCols(getHoneycombColumnCount(availableWidth, hexSize));
+    };
+
+    syncColumns();
+    window.addEventListener("resize", syncColumns);
+    return () => window.removeEventListener("resize", syncColumns);
+  }, []);
 
   const matchedIds = useMemo(() => {
     if (!search.trim()) return new Set<number>();
@@ -65,12 +63,10 @@ export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
     return list;
   }, [spirits, planetFilter]);
 
-  // Build honeycomb rows with 9 cols on large screens
-  // We use CSS to handle responsive column counts
-  const rows = useMemo(() => buildHoneycombRows(filtered, 9), [filtered]);
+  const rows = useMemo(() => buildHoneycombRows(filtered, cols), [filtered, cols]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={containerRef} className="flex flex-col gap-4">
       {/* Search bar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
@@ -130,7 +126,7 @@ export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
       </div>
 
       {/* Honeycomb grid */}
-      <div className="honeycomb-grid">
+      <div className="honeycomb-grid w-full">
         {rows.map((row, rowIndex) => (
           <div
             key={rowIndex}
@@ -141,7 +137,7 @@ export default function HoneycombGrid({ spirits }: HoneycombGridProps) {
               marginTop: rowIndex > 0 ? "calc(-1 * var(--hex-overlap))" : undefined,
             }}
           >
-            {row.map(({ spirit }) => (
+            {row.map(({ item: spirit }) => (
               <div key={spirit.id} className="honeycomb-cell">
                 <HexCell
                   spirit={spirit}
